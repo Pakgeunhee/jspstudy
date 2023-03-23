@@ -37,8 +37,21 @@ public class JSONServlet extends HttpServlet {
 			if(strAge != null && strAge.isEmpty() == false) {
 				age = Integer.parseInt(strAge);
 			}
+			
+			// 이름 예외 처리
+			// 이름의 길이가 2~6 사이가 아닌 경우
+			// 응답코드 : 601
+			// 응답메시지 : 김은 잘못된 이름입니다.
+			if(name.length() < 2 || name.length() > 6) {
+				throw new NameHandleException(name + "은(는) 잘못된 이름입니다.", 601);
+			}
+			
+			// 나이 예외 처리
+			// 나이 0~100 사이가 아닌 경우 
+			// 응답코드 : 600
+			// 응답메시지 : -5살은 잘못된 나이입니다.
 			if(age < 0 || age > 100) {
-				throw new RuntimeException(age + "살은 잘못된 나이입니다.");
+				throw new AgeHandleException(age + "살은 잘못된 나이입니다.", 600);
 			}
 			
 			// 응답할 JSON 데이터
@@ -59,26 +72,18 @@ public class JSONServlet extends HttpServlet {
 			out.flush();
 			out.close();
 			
-		} catch(RuntimeException e) {
-			// 1. 나이 0~100 사이가 아닌 경우 
-			// 	  응답코드 : 600
-			//    응답메시지 : -5살은 잘못된 나이입니다.
-			// 2. 이름의 길이가 2~6 사이가 아닌 경우
-			//	  응답코드 : 601
-			//    응답메시지 : 김은 잘못된 이름입니다.
-			
+		} catch(MyHandleException e) {
+
 			// 응답메시지 타입
 			response.setContentType("text/plain; charset=UTF-8");
 			
 			// 응답코드
-			response.setStatus(600);
+			response.setStatus(e.getErrorCode());
 			
 			// 응답메시지
-			PrintWriter out = response.getWriter();
-			out.println(e.getMessage());
-			out.flush();
-			out.close();
-		}
+			response.getWriter().println(e.getMessage());
+
+		} 
 		
 	}
 
