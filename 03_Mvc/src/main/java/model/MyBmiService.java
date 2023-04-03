@@ -14,15 +14,17 @@ public class MyBmiService implements MyService {
 		Optional<String> opt1 = Optional.ofNullable(request.getParameter("height"));
 		double height = Double.parseDouble(opt1.orElse("0"));
 		Optional<String> opt2 = Optional.ofNullable(request.getParameter("weight"));
-		double weight = Double.parseDouble(opt2.orElse("1"));
+		double weight = Double.parseDouble(opt2.orElse("0"));
 		double bmi = weight / (height * height * 0.0001);
 		String health = "";
 		if(bmi < 20) {
 			health = "저체중";
 		} else if(bmi < 25) {
 			health = "정상";
-		} else {
+		} else if(bmi < 35) {
 			health = "비만";
+		} else {
+			health = "알 수 없음";
 		}
 		request.setAttribute("bmi", bmi);
 		request.setAttribute("health", health);
